@@ -1,0 +1,95 @@
+.we-button {
+    display: inline-block;
+    padding: 3px 0px 3px 8px;
+    font-size: 14px;
+}
+
+[class^="we-icon-"], [class*=" we-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'we-icons' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.we-fav {
+    background: #4a1817 !important;
+}
+
+.we-a-on-off {
+    padding-right: 8px;
+}
+
+.we-icon-star:before {
+  content: "\f005";
+  color: #ebba34;
+}
+.we-icon-star-o:before {
+  content: "\f006";
+}
+.we-icon-eye:before {
+  content: "\f06e";
+  color: #155ee6;
+}
+.we-icon-eye-slash:before {
+  content: "\f070";
+}
+.we-icon-toggle-off:before {
+  content: "\f204";
+  color: #ca3535;  
+}
+.we-icon-toggle-on:before {
+  content: "\f205";
+  color: #488a48;  
+}
+.we-icon-info:before {
+  content: "\e900";
+}
+
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 10px;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
