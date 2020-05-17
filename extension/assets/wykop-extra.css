@@ -36,7 +36,7 @@
 }
 .we-icon-eye:before {
   content: "\f06e";
-  color: #155ee6;
+  color: #ebba34;
 }
 .we-icon-eye-slash:before {
   content: "\f070";
@@ -52,7 +52,14 @@
 .we-icon-info:before {
   content: "\e900";
 }
-
+.we-icon-digg-up:before {
+  content: "\f164";
+  color: #ebba34;  
+}
+.we-icon-digg-down:before {
+  content: "\f165";
+  color: #ebba34;  
+}
 
 .tooltip {
   position: relative;

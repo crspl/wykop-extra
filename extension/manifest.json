@@ -1,5 +1,11 @@
 {
 
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{7229c2df-893f-40b5-be07-91f8d401f059}"
+    }
+  },
+
   "manifest_version": 2,
   "name": "Wykop Extra",
   "version": "0.7",
