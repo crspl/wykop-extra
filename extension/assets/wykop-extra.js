@@ -4,6 +4,7 @@ storage_changes_made = false
 we_articles = {}
 count_articles_visible = 0
 hide_reason = 'ind'
+new_articles = 0
 
 icons_font_url = browser.runtime.getURL("assets/we-icons.ttf")
 icons_font = new FontFace('we-icons', 'url(' + icons_font_url + ')');
@@ -80,7 +81,16 @@ function hideAllArticles() {
 }
 
 function updateArticlesVisible() {
-    $('#we_count').html('Widocznych wykopów: ' + count_articles_visible)
+    val = count_articles_visible
+    if (val < 0) {
+        val = 0
+    }
+    $('#we_count_visible').html('widocznych wykopów: ' + val)
+    if (val > 0) {
+        $('#we_count_visible').css('color', '#FFF454')
+    } else {
+        $('#we_count_visible').css('color', '')
+    }
 }
 
 function dtPad(val) {
@@ -98,16 +108,18 @@ function formatDateTime(ts) {
 
 // doesn't work well so commented out
 function updateArticleDigg(e) {
+    console.log('here')
+    debugger;
     el = $(e.currentTarget)
     li = el.parents('li')
     article = li.find('.article')
     diggbox = li.find('.diggbox')
     if (diggbox.hasClass('digout')) {
-        li.find('.we-a-info').before('<a class="we-a-digg we-button"><span class="we-icon-digg-up"></span><a>')
+        li.find('.we-a-digg').remove()
     } else if (diggbox.hasClass('burried')) {
         li.find('.we-a-info').before('<a class="we-a-digg we-button"><span class="we-icon-digg-down"></span><a>')
     } else {
-        li.find('.we-a-digg').remove()
+        li.find('.we-a-info').before('<a class="we-a-digg we-button"><span class="we-icon-digg-up"></span><a>')
     }
 }
 
@@ -118,7 +130,7 @@ function markArticleVisited(e) {
     id = article.attr('data-id')
     update = false
     if (!isArticleVisited(id)) {
-        li.find('.we-a-info').before('<a class="we-a-vis we-button"><span class="we-icon-eye"></span><a>')
+        li.find('.we-a-info').before('<a class="we-a-vis we-button"><span class="we-icon-eye-yellow"></span><a>')
         articleSet(id, 'visited', 1)
     }
     if (!isArticleHidden(id) && !el.hasClass('ajax')) {
@@ -133,7 +145,7 @@ function markMikroVisited(e) {
     id = block.attr('data-id')
     update = false
     if (!isArticleVisited(id)) {
-        li.find('.we-a-info').before('<a class="we-a-vis we-button"><span class="we-icon-eye"></span><a>')
+        li.find('.we-a-info').before('<a class="we-a-vis we-button"><span class="we-icon-eye-yellow"></span><a>')
         articleSet(id, 'visited', 1)
     }
     if (!isArticleHidden(id)) {
@@ -280,16 +292,22 @@ function articlesInit() {
     ts = Math.floor(Date.now() / 1000)
     loc = resolveLoc()
     $('[data-id]').each(function(id, el) {
-        id = $(el).attr('data-id')
+        el = $(el)
+        if (!el.is(":visible")) {
+            return
+        }
+        id = el.attr('data-id')
         if (!(id in we_articles)) {
             console.debug('new article id: ' + id)
+            new_articles++
+            el.attr('we-article-new', 1)
             we_articles[id] = {}
             we_articles[id]['firstseen_ts'] = ts
             we_articles[id]['firstseen_loc'] = loc
             storage_changes_made = true
         }
     })
-    //browser.storage.synced.set({ 'we_articles': we_articles })
+    $('#we_count_new').html('nowych wykopów: ' + new_articles)   
 }
 
 function articleSet(id, property, value) {
@@ -303,7 +321,6 @@ function articleSet(id, property, value) {
         we_articles[id][property + '_reason'] = hide_reason
     }
     storage_changes_made = true
-    //browser.storage.synced.set({ 'we_articles': we_articles })
 }
 
 function articleUnset(id, property) {
@@ -312,7 +329,6 @@ function articleUnset(id, property) {
     }
     delete(we_articles[id][property])
     storage_changes_made = true
-    //browser.storage.synced.set({ 'we_articles': we_articles })
 }
 
 function isArticleVisited(id) {
@@ -350,14 +366,24 @@ function processArticlesOnLoad() {
     console.debug('processing articles start')
     $('[data-id]').each(function(num, el) {
         el = $(el)
+
+        if (!el.is(":visible")) {
+            return;
+        }
+
         li = el.parents('li')
         id = el.attr('data-id')
         el.parent().find('a').attr("target","_blank")
         a = el.parent().find('h2 a')
         visited = ''
         if (isArticleVisited(id)) {
-            visited = '<a class="we-a-vis we-button"><span class="we-icon-eye"></span><a>'
+            visited = '<a class="we-a-vis we-button"><span class="we-icon-eye-yellow"></span><a>'
         }
+
+        we_icon = 'we-icon-info'
+        if (el.attr('we-article-new') == 1) {
+            we_icon = 'we-icon-info-new'
+        }        
         diggbox = el.find('.diggbox')
         digg = ''
         if (diggbox.hasClass('burried')) {
@@ -373,7 +399,7 @@ function processArticlesOnLoad() {
         }
         if (isArticleHidden(id)) {
             if (el.hasClass('article') || el.hasClass('wblock')) {
-                el.parent().prepend('<div style="text-align:right">&nbsp;<span class="we-content">&nbsp;</span>' + visited + '' + digg + '<a class="we-a-info we-button"><span class="we-icon-info tooltip"><span class="tooltiptext">Tooltip text</span></span></a><a class="we-a-fav we-button"><span class="' + fav_icon + '"></span></a><a class="we-a-on-off we-button"><span class="we-icon-toggle-on"></span></a></div>')
+                el.parent().prepend('<div style="text-align:right">&nbsp;<span class="we-content">&nbsp;</span>' + visited + '' + digg + '<a class="we-a-info we-button"><span class="' + we_icon + ' tooltip"><span class="tooltiptext">Tooltip text</span></span></a><a class="we-a-fav we-button"><span class="' + fav_icon + '"></span></a><a class="we-a-on-off we-button"><span class="we-icon-toggle-on"></span></a></div>')
                 if (el.hasClass('article')) {
                     el.parent().find('.we-content').html(a.parent().html())
                     el.parent().find('.we-a-on-off').on('click', articleShow)
@@ -389,7 +415,7 @@ function processArticlesOnLoad() {
             }
         } else {
             if (el.hasClass('article') || el.hasClass('wblock')) {
-                el.parent().prepend('<div style="text-align:right">&nbsp;<span class="we-content">&nbsp;</span>' + visited + '' + digg + '<a class="we-a-info we-button"><span class="we-icon-info tooltip"><span class="tooltiptext">Tooltip text</span></span></a><a class="we-a-fav we-button"><span class="' + fav_icon + '"></span></a><a class="we-a-on-off we-button"><span class="we-icon-toggle-off"></span></a></div>')
+                el.parent().prepend('<div style="text-align:right">&nbsp;<span class="we-content">&nbsp;</span>' + visited + '' + digg + '<a class="we-a-info we-button"><span class="' + we_icon + ' tooltip"><span class="tooltiptext">Tooltip text</span></span></a><a class="we-a-fav we-button"><span class="' + fav_icon + '"></span></a><a class="we-a-on-off we-button"><span class="we-icon-toggle-off"></span></a></div>')
                 if (el.hasClass('article')) {
                     el.parent().find('.we-a-on-off').on('click', articleHide)
                     el.parent().find('.we-a-fav').on('click', articleSwitchFav)
@@ -407,6 +433,7 @@ function processArticlesOnLoad() {
     console.debug('processing articles finished')
     $('.fix-tagline a[title="Otwórz źródło znaleziska"]').on('click', markArticleVisited)
     $('h2 a').on('click', markArticleVisited)
+    $('div.diggbox a').on('click', updateArticleDigg)
     $('div.article .media-content a').on('click', markArticleVisited)
     $('.row.elements a.affect').on('click', markArticleVisited)
     $('.tooltip').hover(generateTooltip, null)
@@ -451,7 +478,8 @@ function onError(error) {
 }
 
 function init() {
-    //$('.mainnav').append('<li id="we_count"></li><li id=we_hide_all>HIDE ALL</li><li id=we_show_all>SHOW ALL</li>')
+    $('#nav').prepend('<div class="clearfix m-reset-position" style="background:#2c2c2c"><span id="we_count_new" class="we-button-top">nowych wykopów: -</span><span id="we_count_visible" class="we-button-top">widocznych wykopów: -</span><span class="we-button-top" id=we_hide_all><span class="we-icon-eye-slash"></span></span><span class="we-button-top" id=we_show_all><span class="we-icon-eye"></span></span></div>')
+    $('#site').css('padding-top', '84px')
     getting = browser.storage.sync.get(["we_articles"])
     getting.then(getDataFromStorage, onError)
     setInterval(syncStorage, 60000)
@@ -460,7 +488,6 @@ function init() {
         syncStorage()
     });
     $(document).ready(function() {
-        
         $("img.lazy").each(function(num, el) {
            $(el).attr('src', $(el).data('original'))
         })

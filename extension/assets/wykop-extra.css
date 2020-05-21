@@ -34,9 +34,12 @@
 .we-icon-star-o:before {
   content: "\f006";
 }
-.we-icon-eye:before {
+.we-icon-eye-yellow:before {
   content: "\f06e";
   color: #ebba34;
+}
+.we-icon-eye:before {
+  content: "\f06e";
 }
 .we-icon-eye-slash:before {
   content: "\f070";
@@ -52,6 +55,12 @@
 .we-icon-info:before {
   content: "\e900";
 }
+
+.we-icon-info-new:before {
+  content: "\e900";
+  color: #ebba34;
+}
+
 .we-icon-digg-up:before {
   content: "\f164";
   color: #ebba34;  
@@ -99,4 +108,27 @@
 .tooltip:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
+}
+
+/* generated using https://www.bestcssbuttongenerator.com/#/12 */
+.we-button-top {
+    box-shadow:inset 0px 1px 0px 0px #999999;
+    background:linear-gradient(to bottom, #474747 5%, #545354 100%);
+    border-radius:3px;
+    border:1px solid #171c1a;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-family:Arial;
+    font-size:10px;
+    padding:3px 12px;
+    text-decoration:none;
+    margin:3px;
+}
+.we-button-top:hover {
+    background:linear-gradient(to bottom, #545354 5%, #474747 100%);
+}
+.we-button-top:active {
+    position:relative;
+    top:1px;
 }
