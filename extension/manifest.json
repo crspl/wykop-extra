@@ -8,17 +8,30 @@
 
   "manifest_version": 2,
   "name": "Wykop Extra",
-  "version": "0.7",
+  "version": "0.85",
 
   "description": "Dodatek wspomagający przegladanie strony wykop.pl",
 
-  "permissions": ["storage"],
+  "permissions": [
+    "storage"
+  ],
 
   "web_accessible_resources": ["assets/we-icons.ttf" ],
 
   "content_scripts": [
     {
-      "matches": [ "*://*.wykop.pl/", "*://*.wykop.pl/strona/*", "*://*.wykop.pl/tag/*", "*://*.wykop.pl/wykopalisko/*", "*://*.wykop.pl/hity/*", "*://*.wykop.pl/moj/*", "*://*.wykop.pl/najnowsze/*", "*://*.wykop.pl/aktywne/*", "*://*.wykop.pl/ulubione/*" ],
+      "matches": [
+            "*://*.wykop.pl/",
+            "*://*.wykop.pl/strona/*",
+            "*://*.wykop.pl/tag/*",
+            "*://*.wykop.pl/wykopalisko/*",
+            "*://*.wykop.pl/hity/*",
+            "*://*.wykop.pl/moj/*",
+            "*://*.wykop.pl/najnowsze/*",
+            "*://*.wykop.pl/aktywne/*",
+            "*://*.wykop.pl/ulubione/*",
+            "*://*.wykop.pl/link/*"
+        ],
       "js": ["assets/jquery-3.5.0.slim.min.js", "assets/wykop-extra.js" ],
       "css": ["assets/wykop-extra.css"]
     }

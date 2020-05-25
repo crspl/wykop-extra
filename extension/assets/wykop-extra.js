@@ -6,6 +6,13 @@ count_articles_visible = 0
 hide_reason = 'ind'
 new_articles = 0
 
+is_mobile=/Mobi|Android/i.test(navigator.userAgent)
+
+we_button = 'we-button'
+if (is_mobile) {
+    we_button = 'we-button we-mobile-size'
+}
+
 icons_font_url = browser.runtime.getURL("assets/we-icons.ttf")
 icons_font = new FontFace('we-icons', 'url(' + icons_font_url + ')');
 icons_font.load().then(function(loaded_face) {
@@ -117,9 +124,9 @@ function updateArticleDigg(e) {
     if (diggbox.hasClass('digout')) {
         li.find('.we-a-digg').remove()
     } else if (diggbox.hasClass('burried')) {
-        li.find('.we-a-info').before('<a class="we-a-digg we-button"><span class="we-icon-digg-down"></span><a>')
+        li.find('.we-a-info').before('<a class="we-a-digg ' + we_button + '"><span class="we-icon-digg-down"></span><a>')
     } else {
-        li.find('.we-a-info').before('<a class="we-a-digg we-button"><span class="we-icon-digg-up"></span><a>')
+        li.find('.we-a-info').before('<a class="we-a-digg ' + we_button + '"><span class="we-icon-digg-up"></span><a>')
     }
 }
 
@@ -130,7 +137,7 @@ function markArticleVisited(e) {
     id = article.attr('data-id')
     update = false
     if (!isArticleVisited(id)) {
-        li.find('.we-a-info').before('<a class="we-a-vis we-button"><span class="we-icon-eye-yellow"></span><a>')
+        li.find('.we-a-info').before('<a class="we-a-vis ' + we_button + '"><span class="we-icon-eye-yellow"></span><a>')
         articleSet(id, 'visited', 1)
     }
     if (!isArticleHidden(id) && !el.hasClass('ajax')) {
@@ -145,7 +152,7 @@ function markMikroVisited(e) {
     id = block.attr('data-id')
     update = false
     if (!isArticleVisited(id)) {
-        li.find('.we-a-info').before('<a class="we-a-vis we-button"><span class="we-icon-eye-yellow"></span><a>')
+        li.find('.we-a-info').before('<a class="we-a-vis ' + we_button + '"><span class="we-icon-eye-yellow"></span><a>')
         articleSet(id, 'visited', 1)
     }
     if (!isArticleHidden(id)) {
@@ -367,6 +374,10 @@ function processArticlesOnLoad() {
     $('[data-id]').each(function(num, el) {
         el = $(el)
 
+        if (!(el.hasClass('article') || el.hasClass('wblock'))) {
+            return;
+        }
+
         if (!el.is(":visible")) {
             return;
         }
@@ -377,7 +388,7 @@ function processArticlesOnLoad() {
         a = el.parent().find('h2 a')
         visited = ''
         if (isArticleVisited(id)) {
-            visited = '<a class="we-a-vis we-button"><span class="we-icon-eye-yellow"></span><a>'
+            visited = '<a class="we-a-vis ' + we_button + '"><span class="we-icon-eye-yellow"></span><a>'
         }
 
         we_icon = 'we-icon-info'
@@ -387,9 +398,9 @@ function processArticlesOnLoad() {
         diggbox = el.find('.diggbox')
         digg = ''
         if (diggbox.hasClass('burried')) {
-            digg = '<a class="we-a-digg we-button"><span class="we-icon-digg-down"></span><a>'
+            digg = '<a class="we-a-digg ' + we_button + '"><span class="we-icon-digg-down"></span><a>'
         } else if (diggbox.hasClass('digout')) {
-            digg = '<a class="we-a-digg we-button"><span class="we-icon-digg-up"></span><a>'
+            digg = '<a class="we-a-digg ' + we_button + '"><span class="we-icon-digg-up"></span><a>'
         }
         if (isArticleFav(id)) {
             li.addClass('we-fav')
@@ -397,35 +408,40 @@ function processArticlesOnLoad() {
         } else {
             fav_icon = 'we-icon-star-o'
         }
+        on_off_icon = 'we-icon-toggle-off'
         if (isArticleHidden(id)) {
-            if (el.hasClass('article') || el.hasClass('wblock')) {
-                el.parent().prepend('<div style="text-align:right">&nbsp;<span class="we-content">&nbsp;</span>' + visited + '' + digg + '<a class="we-a-info we-button"><span class="' + we_icon + ' tooltip"><span class="tooltiptext">Tooltip text</span></span></a><a class="we-a-fav we-button"><span class="' + fav_icon + '"></span></a><a class="we-a-on-off we-button"><span class="we-icon-toggle-on"></span></a></div>')
-                if (el.hasClass('article')) {
-                    el.parent().find('.we-content').html(a.parent().html())
-                    el.parent().find('.we-a-on-off').on('click', articleShow)
-                } else {
-                    link = el.find('div.author').find('a').eq(1).clone()
-                    link.html('mikro: ' + link.attr('href'))
-                    el.parent().find('.we-content').prepend(link)
-                    el.parent().find('.we-a-on-off').on('click', mikroShow)
-                }
-                el.parent().find('.we-content a').on('click', markArticleVisited)
-                el.parent().find('.we-a-fav').on('click', articleSwitchFav)
-                el.hide()
-            }
+            on_off_icon = 'we-icon-toggle-on'
+        }
+        if (is_mobile) {
+            toolbar = '<div style="text-align:right">&nbsp;' + visited + '' + digg + '<a class="we-a-info we-button we-mobile-size"><span class="' + we_icon + ' tooltip"><span class="tooltiptext">Tooltip text</span></span></a><a class="we-a-fav we-button we-mobile-size"><span class="' + fav_icon + '"></span></a><a class="we-a-on-off we-button we-mobile-size"><span class="'+ on_off_icon +'"></span></a><br><div class="we-content we-content-mobile">&nbsp;</div></div>'
         } else {
-            if (el.hasClass('article') || el.hasClass('wblock')) {
-                el.parent().prepend('<div style="text-align:right">&nbsp;<span class="we-content">&nbsp;</span>' + visited + '' + digg + '<a class="we-a-info we-button"><span class="' + we_icon + ' tooltip"><span class="tooltiptext">Tooltip text</span></span></a><a class="we-a-fav we-button"><span class="' + fav_icon + '"></span></a><a class="we-a-on-off we-button"><span class="we-icon-toggle-off"></span></a></div>')
-                if (el.hasClass('article')) {
-                    el.parent().find('.we-a-on-off').on('click', articleHide)
-                    el.parent().find('.we-a-fav').on('click', articleSwitchFav)
-                    if (el.is(":visible")) {
-                        count_articles_visible++
-                    }
-                } else {
-                    el.parent().find('.we-a-on-off').on('click', mikroHide)
-                    el.find('div.author').children().eq(1).on('click', markMikroVisited)
+            toolbar = '<div style="text-align:right">&nbsp;<span class="we-content">&nbsp;</span>' + visited + '' + digg + '<a class="we-a-info we-button"><span class="' + we_icon + ' tooltip"><span class="tooltiptext">Tooltip text</span></span></a><a class="we-a-fav we-button"><span class="' + fav_icon + '"></span></a><a class="we-a-on-off we-button"><span class="'+ on_off_icon +'"></span></a></div>'
+        }
+
+        el.parent().prepend(toolbar)
+        if (isArticleHidden(id)) {
+            if (el.hasClass('article')) {
+                el.parent().find('.we-content').html(a.parent().html())
+                el.parent().find('.we-a-on-off').on('click', articleShow)
+            } else {
+                link = el.find('div.author').find('a').eq(1).clone()
+                link.html('mikro: ' + link.attr('href'))
+                el.parent().find('.we-content').prepend(link)
+                el.parent().find('.we-a-on-off').on('click', mikroShow)
+            }
+            el.parent().find('.we-content a').on('click', markArticleVisited)
+            el.parent().find('.we-a-fav').on('click', articleSwitchFav)
+            el.hide()
+        } else {
+            if (el.hasClass('article')) {
+                el.parent().find('.we-a-on-off').on('click', articleHide)
+                el.parent().find('.we-a-fav').on('click', articleSwitchFav)
+                if (el.is(":visible")) {
+                    count_articles_visible++
                 }
+            } else {
+                el.parent().find('.we-a-on-off').on('click', mikroHide)
+                el.find('div.author').children().eq(1).on('click', markMikroVisited)
             }
         }
     })
@@ -444,7 +460,7 @@ function processArticlesOnLoad() {
 }
 
 function getDataFromStorage(result) {
-    console.debug('got from storage: ', result)
+    //console.debug('got from storage: ', result)
     if (result.we_articles) {
         we_articles = result.we_articles
     } else {
@@ -494,4 +510,8 @@ function init() {
     });
 }
 
-init();
+if (/wykop.pl\/link\//.test(document.baseURI)) {
+    console.log('wykop extra - just article page')
+} else {
+    init();
+}

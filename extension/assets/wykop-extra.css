@@ -4,6 +4,17 @@
     font-size: 14px;
 }
 
+.we-mobile-size {
+    font-size: 22px;
+    padding: 5px;
+}
+
+.we-content-mobile {
+    text-align: left;
+    padding: 5px;
+    border-top: 1px solid #777777;
+}
+
 [class^="we-icon-"], [class*=" we-icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'we-icons' !important;
